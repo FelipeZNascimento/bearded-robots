@@ -1,17 +1,15 @@
 import { useState } from "react";
 
-import Backdrop from "@mui/material/Backdrop";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Fade from "@mui/material/Fade";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { Upload } from "@mui/icons-material";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 
+import { TestModal } from "components/index";
+
 import classNames from "classnames";
 import styles from "./Tests.module.scss";
+const testJson = require("test.json");
 
 const Input = styled("input")({
   display: "none",
@@ -19,15 +17,14 @@ const Input = styled("input")({
 
 const Tests = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState("");
-  const handleModal = (flag: boolean) => setIsModalOpen(flag);
+  const [modalTestId, setModalTestId] = useState<null | GridRowId>(null);
 
   const containerClass = classNames("GFlexCenter", {
     [styles.container]: true,
   });
 
   const handleModalOpening = (id: GridRowId) => {
-    setModalContent(`Setting content for modal id ${id}`);
+    setModalTestId(id);
     setIsModalOpen(true);
   };
 
@@ -54,7 +51,7 @@ const Tests = () => {
         &nbsp;
         <Button
           className={styles.button}
-          variant="outlined"
+          variant="contained"
           onClick={() => alert(`Testing id ${id}`)}
         >
           Test
@@ -115,32 +112,6 @@ const Tests = () => {
     },
   ];
 
-  const renderModal = () => {
-    return (
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={isModalOpen}
-        onClose={() => handleModal(false)}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={isModalOpen}>
-          <Box className={styles.modal}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Test Details
-            </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              {modalContent}
-            </Typography>
-          </Box>
-        </Fade>
-      </Modal>
-    );
-  };
   return (
     <section className={containerClass}>
       <div className={styles.table}>
@@ -163,7 +134,7 @@ const Tests = () => {
           Upload
         </Button>
       </label>
-      {renderModal()}
+      <TestModal testDescription={JSON.stringify(testJson)} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };

@@ -12,6 +12,12 @@
   color: white;
   flex: 0;
   width: 100vw;
+
+  & img {
+    max-width: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 
 .main {
@@ -26,4 +32,10 @@
   color: white;
   flex: 0;
   width: 100vw;
+
+  & img {
+    max-width: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }

@@ -1,4 +1,5 @@
 import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import {
   CheckCircleOutline,
@@ -27,14 +28,24 @@ const Results = () => {
     if (testObject) {
       switch (testObject.status) {
         case "done":
-          icon = () => <CheckCircleOutline color="success" />;
+          icon = () => (
+            <Tooltip title="Success">
+              <CheckCircleOutline color="success" />
+            </Tooltip>
+          );
           break;
         case "error":
-          icon = () => <ErrorOutline color="error" />;
+          icon = () => (
+            <Tooltip title="Error">
+              <ErrorOutline color="error" />
+            </Tooltip>
+          );
           break;
         case "loading":
           icon = () => (
-            <Loop className={styles.testStatusLoading} color="warning" />
+            <Tooltip title="Loading">
+              <Loop className={styles.testStatusLoading} color="warning" />
+            </Tooltip>
           );
           break;
       }
@@ -88,7 +99,6 @@ const Results = () => {
       <div className={styles.table}>
         <DataGrid
           hideFooterSelectedRowCount
-          showColumnRightBorder
           rows={rows}
           columns={columns}
           autoPageSize
