@@ -19,6 +19,11 @@ export const storeTest = (testData:any) => {
         lib.commit();
     }
 }
+export const getTest = (id:string) => {
+    return lib.queryAll(TABLE_TESTS, {
+        query: {id}
+    });
+}
 
 export const getTests = () => {
     return lib.queryAll(TABLE_TESTS);

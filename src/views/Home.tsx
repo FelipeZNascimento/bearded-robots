@@ -4,10 +4,9 @@ import classNames from "classnames";
 import styles from "./Home.module.scss";
 import { Results, Tests } from "components/index";
 import { useEffect, useState } from "react";
-import { initMqttClient } from "bff/mqtt";
-import { initDB,getTests, storeTest,deleteTest } from "bff/localstorage";
+import { currentlyRunningTests, initMqttClient,killMqttClient,requestMqttTest,currentWorkstation } from "bff/mqtt";
+import { initDB,getTests, storeTest,deleteTest, getTest } from "bff/localstorage";
 import { fileUploadHandler } from "bff/files";
-
 const Home = () => {
   const containerClass = classNames({
     [styles.container]: true,
@@ -24,25 +23,34 @@ const Home = () => {
   const footerClass = classNames("GFlexCenter", {
     [styles.footer]: true,
   });
+
+
   const [availableTests, setAvailableTests] = useState<any[]>([]);
   const [runningTests, setRunningTests] = useState<any[]>([]);
+
   useEffect(() => {
-    initMqttClient();
+    initMqttClient(setRunningTests);
     initDB();
   setAvailableTests(getTests());
+  return () => {
+    killMqttClient()
+  }
   },[])
   const handleUpload = (e:any) => {
     fileUploadHandler(e, (result) => {
-      console.log("hehe",result);
       storeTest({Device: result.Device, Steps: result.Steps})
       setAvailableTests(getTests());
-      console.log("available tests", availableTests)
     })
   }
 
 
-  const runTest = (test:any) => {
-    setRunningTests([...runningTests, test]);
+  const runTest = (id:string) => {
+    const selectedTest = getTest(id)[0]
+    console.log(selectedTest,currentWorkstation);
+    if (currentWorkstation && currentWorkstation.AppId ){
+      const testID = id+Date.now();
+      requestMqttTest(testID,selectedTest,currentWorkstation.AppId);
+    }
   }
 
   const attemptDeleteTest = (id: any) => {
@@ -51,6 +59,18 @@ const Home = () => {
       deleteTest(id as string)
       setAvailableTests(getTests());
     }
+  }
+
+  const clearRunningTests = () => {
+      // eslint-disable-next-line no-restricted-globals
+    if (confirm(`Are you sure? Test results will be lost`)) {
+      setRunningTests([])
+    }
+  }
+
+  const exportRunningTests = () => {
+    navigator.clipboard.writeText(JSON.stringify(runningTests));
+
   }
   return (
     <div className={containerClass}>
@@ -62,9 +82,8 @@ const Home = () => {
         </Typography>
       </header>
       <main className={mainClass}>
-        <input type="file" onChange={handleUpload}/>
-          <Tests rows={availableTests} runTest={runTest} attemptDeleteTest={attemptDeleteTest} />
-          <Results rows={runningTests} />
+          <Tests rows={availableTests} runTest={runTest} attemptDeleteTest={attemptDeleteTest} handleUpload={handleUpload} />
+          <Results rows={runningTests} clearRunningTests={clearRunningTests} exportRunningTests={exportRunningTests} />
       </main>
       <footer className={footerClass}>
         <img src="/sky.png" alt="Sky logo" />

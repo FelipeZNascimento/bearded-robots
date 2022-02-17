@@ -15,8 +15,10 @@ import styles from "./Results.module.scss";
 
 interface ContainerProps {
   rows: any[];
+  exportRunningTests: () => void;
+  clearRunningTests: () => void;
 }
-const Results = ({rows }: ContainerProps) => {
+const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) => {
   const containerClass = classNames("GFlexCenter", {
     [styles.container]: true,
   });
@@ -55,7 +57,7 @@ const Results = ({rows }: ContainerProps) => {
 
       return (
         <div className={styles.testResult}>
-          <p className={styles.testName}>{testObject.testName}</p>
+          <p className={styles.testName} key={testObject.status}>{testObject.status}</p>
           <p className={styles.testStatus}>{icon()}</p>
         </div>
       );
@@ -77,26 +79,6 @@ const Results = ({rows }: ContainerProps) => {
     },
   ];
 
-  // const rows = [
-  //   {
-  //     id: 1,
-  //     status: "done",
-  //     testName: "Explode the console",
-  //   },
-  //   {
-  //     id: 2,
-  //     status: "loading",
-  //     testName: "Brick the console",
-  //   },
-  //   { id: 3, status: "done", testName: "Is this real life" },
-  //   { id: 4, status: "done", testName: "And beyond" },
-  //   {
-  //     id: 5,
-  //     status: "error",
-  //     testName: "Pokémon Legends: Arceus",
-  //   },
-  // ];
-
   return (
     <section className={containerClass}>
       <div className={styles.table}>
@@ -112,14 +94,14 @@ const Results = ({rows }: ContainerProps) => {
         <Button
           variant="contained"
           startIcon={<ClearAll />}
-          onClick={() => alert(`Clear All`)}
+          onClick={clearRunningTests}
         >
           Clear
         </Button>
         <Button
           variant="contained"
           startIcon={<ImportExport />}
-          onClick={() => alert(`Export`)}
+          onClick={exportRunningTests}
         >
           Export
         </Button>

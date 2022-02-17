@@ -16,11 +16,12 @@ const Input = styled("input")({
 });
 interface ContainerProps {
   rows: any[];
-  runTest : (test:any) => void
+  runTest : (id:string) => void
   attemptDeleteTest : (id:any) => void
+  handleUpload : (e:any) => void
 }
 
-function Tests({rows, runTest,attemptDeleteTest }: ContainerProps) {
+function Tests({rows, runTest,attemptDeleteTest,handleUpload }: ContainerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTestId, setModalTestId] = useState<null | GridRowId>(null);
 
@@ -57,7 +58,7 @@ function Tests({rows, runTest,attemptDeleteTest }: ContainerProps) {
         <Button
           className={styles.button}
           variant="outlined"
-          onClick={() => runTest({id, status:"loading",testName:id})}
+          onClick={() => runTest(id as string)}
         >
           Test
         </Button>
@@ -96,27 +97,6 @@ function Tests({rows, runTest,attemptDeleteTest }: ContainerProps) {
       renderCell: (params) => renderButtons(params.id),
     },
   ];
-
-  // const rows: any[] = [
-    // {
-    //   id: 1,
-    //   device: "Xbox",
-    //   testName: "Explode the console",
-    // },
-    // {
-    //   id: 2,
-    //   device: "Playstation",
-    //   testName: "Brick the console",
-    // },
-    // { id: 3, device: "Vidaa", testName: "Is this real life" },
-    // { id: 4, device: "X1 Infinity", testName: "And beyond" },
-    // {
-    //   id: 5,
-    //   device: "Nintendo Switch",
-    //   testName: "Pokémon Legends: Arceus",
-    // },
-  // ];
-
   return (
     <section className={containerClass}>
       <div className={styles.table}>
@@ -130,10 +110,9 @@ function Tests({rows, runTest,attemptDeleteTest }: ContainerProps) {
       </div>
       <label htmlFor="contained-button-file">
         <Input
-          accept="image/*"
           id="contained-button-file"
-          multiple
           type="file"
+          onChange={handleUpload}
         />
         <Button component="span" variant="contained" startIcon={<Upload />}>
           Upload
