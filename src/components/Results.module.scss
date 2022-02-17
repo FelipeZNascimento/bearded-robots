@@ -6,7 +6,7 @@
 }
 
 .table {
-  height: 100%;
+  height: 80%;
   width: 90%;
   margin: 10px;
 }
@@ -39,6 +39,11 @@
     @extend .testStatus;
     animation: spin 4s infinite linear;
   }
+}
+
+.buttonContainer {
+  gap: 20px;
+  width: 100%;
 }
 
 @keyframes spin {
