@@ -13,7 +13,10 @@ import {
 import classNames from "classnames";
 import styles from "./Results.module.scss";
 
-const Results = () => {
+interface ContainerProps {
+  rows: any[];
+}
+const Results = ({rows }: ContainerProps) => {
   const containerClass = classNames("GFlexCenter", {
     [styles.container]: true,
   });
@@ -74,25 +77,25 @@ const Results = () => {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      status: "done",
-      testName: "Explode the console",
-    },
-    {
-      id: 2,
-      status: "loading",
-      testName: "Brick the console",
-    },
-    { id: 3, status: "done", testName: "Is this real life" },
-    { id: 4, status: "done", testName: "And beyond" },
-    {
-      id: 5,
-      status: "error",
-      testName: "Pokémon Legends: Arceus",
-    },
-  ];
+  // const rows = [
+  //   {
+  //     id: 1,
+  //     status: "done",
+  //     testName: "Explode the console",
+  //   },
+  //   {
+  //     id: 2,
+  //     status: "loading",
+  //     testName: "Brick the console",
+  //   },
+  //   { id: 3, status: "done", testName: "Is this real life" },
+  //   { id: 4, status: "done", testName: "And beyond" },
+  //   {
+  //     id: 5,
+  //     status: "error",
+  //     testName: "Pokémon Legends: Arceus",
+  //   },
+  // ];
 
   return (
     <section className={containerClass}>

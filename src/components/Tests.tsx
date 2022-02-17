@@ -14,8 +14,13 @@ const testJson = require("test.json");
 const Input = styled("input")({
   display: "none",
 });
+interface ContainerProps {
+  rows: any[];
+  runTest : (test:any) => void
+  attemptDeleteTest : (id:any) => void
+}
 
-const Tests = () => {
+function Tests({rows, runTest,attemptDeleteTest }: ContainerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTestId, setModalTestId] = useState<null | GridRowId>(null);
 
@@ -44,15 +49,15 @@ const Tests = () => {
           className={styles.button}
           color="error"
           variant="outlined"
-          onClick={() => alert(`Deleting id ${id}`)}
+          onClick={() => attemptDeleteTest(id)}
         >
           Delete
         </Button>
         &nbsp;
         <Button
           className={styles.button}
-          variant="contained"
-          onClick={() => alert(`Testing id ${id}`)}
+          variant="outlined"
+          onClick={() => runTest({id, status:"loading",testName:id})}
         >
           Test
         </Button>
@@ -64,7 +69,7 @@ const Tests = () => {
     {
       cellClassName: styles.rows,
       disableColumnMenu: true,
-      field: "device",
+      field: "Device",
       flex: 1,
       headerClassName: styles.header,
       headerName: "Device",
@@ -72,7 +77,7 @@ const Tests = () => {
     {
       cellClassName: styles.rows,
       disableColumnMenu: true,
-      field: "testName",
+      field: "id",
       flex: 2,
       headerClassName: styles.header,
       headerName: "Test",
@@ -92,25 +97,25 @@ const Tests = () => {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      device: "Xbox",
-      testName: "Explode the console",
-    },
-    {
-      id: 2,
-      device: "Playstation",
-      testName: "Brick the console",
-    },
-    { id: 3, device: "Vidaa", testName: "Is this real life" },
-    { id: 4, device: "X1 Infinity", testName: "And beyond" },
-    {
-      id: 5,
-      device: "Nintendo Switch",
-      testName: "Pokémon Legends: Arceus",
-    },
-  ];
+  // const rows: any[] = [
+    // {
+    //   id: 1,
+    //   device: "Xbox",
+    //   testName: "Explode the console",
+    // },
+    // {
+    //   id: 2,
+    //   device: "Playstation",
+    //   testName: "Brick the console",
+    // },
+    // { id: 3, device: "Vidaa", testName: "Is this real life" },
+    // { id: 4, device: "X1 Infinity", testName: "And beyond" },
+    // {
+    //   id: 5,
+    //   device: "Nintendo Switch",
+    //   testName: "Pokémon Legends: Arceus",
+    // },
+  // ];
 
   return (
     <section className={containerClass}>
