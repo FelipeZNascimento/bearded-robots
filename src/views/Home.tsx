@@ -33,7 +33,7 @@ const Home = () => {
           <Results />
       </main>
       <footer className={footerClass}>
-        <Typography margin={1} variant="h5">
+        <Typography margin={1} variant="h6">
           Developed for Sky by Hugo Dias, André Gomes and Felipe Nascimento
         </Typography>
       </footer>

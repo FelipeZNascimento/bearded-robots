@@ -1,5 +1,13 @@
+import Button from "@mui/material/Button";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
-import { CheckCircleOutline, ErrorOutline, Loop } from '@mui/icons-material';
+import {
+  CheckCircleOutline,
+  ClearAll,
+  ErrorOutline,
+  HelpOutline,
+  ImportExport,
+  Loop,
+} from "@mui/icons-material";
 
 import classNames from "classnames";
 import styles from "./Results.module.scss";
@@ -9,27 +17,32 @@ const Results = () => {
     [styles.container]: true,
   });
 
+  const buttonContainerClass = classNames("GFlexCenter", {
+    [styles.buttonContainer]: true,
+  });
+
   const renderCell = (id: GridRowId) => {
     const testObject = rows.find((row) => row.id === id);
-    if (testObject && testObject.status === "done") {
+    let icon = () => <HelpOutline color="warning" />;
+    if (testObject) {
+      switch (testObject.status) {
+        case "done":
+          icon = () => <CheckCircleOutline color="success" />;
+          break;
+        case "error":
+          icon = () => <ErrorOutline color="error" />;
+          break;
+        case "loading":
+          icon = () => (
+            <Loop className={styles.testStatusLoading} color="warning" />
+          );
+          break;
+      }
+
       return (
         <div className={styles.testResult}>
           <p className={styles.testName}>{testObject.testName}</p>
-          <p className={styles.testStatus}><CheckCircleOutline color="success" /></p>
-        </div>
-      );
-    } else if (testObject && testObject.status === "error") {
-      return (
-        <div className={styles.testResult}>
-          <p className={styles.testName}>{testObject.testName}</p>
-          <p className={styles.testStatus}><ErrorOutline color="error" /></p>
-        </div>
-      );
-    } else if (testObject && testObject.status === "loading") {
-      return (
-        <div className={styles.testResult}>
-          <p className={styles.testName}>{testObject.testName}</p>
-          <p className={styles.testStatus}><Loop className={styles.testStatusLoading} color="warning" /></p>
+          <p className={styles.testStatus}>{icon()}</p>
         </div>
       );
     }
@@ -81,6 +94,22 @@ const Results = () => {
           autoPageSize
           rowsPerPageOptions={[5]}
         />
+      </div>
+      <div className={buttonContainerClass}>
+        <Button
+          variant="contained"
+          startIcon={<ClearAll />}
+          onClick={() => alert(`Clear All`)}
+        >
+          Clear
+        </Button>
+        <Button
+          variant="contained"
+          startIcon={<ImportExport />}
+          onClick={() => alert(`Export`)}
+        >
+          Export
+        </Button>
       </div>
     </section>
   );

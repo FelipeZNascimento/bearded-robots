@@ -1,5 +1,6 @@
-import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
+import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
+import { Upload } from "@mui/icons-material";
 
 import classNames from "classnames";
 import styles from "./Tests.module.scss";
@@ -13,22 +14,28 @@ function Tests() {
     return (
       <>
         <Button
-          variant="contained"
-          onClick={() => alert(`Viewing id ${id}`)}
+          className={styles.button}
           color="warning"
+          variant="outlined"
+          onClick={() => alert(`Viewing id ${id}`)}
         >
           View
         </Button>
         &nbsp;
         <Button
-          variant="contained"
-          onClick={() => alert(`Deleting id ${id}`)}
+          className={styles.button}
           color="error"
+          variant="outlined"
+          onClick={() => alert(`Deleting id ${id}`)}
         >
           Delete
         </Button>
         &nbsp;
-        <Button variant="contained" onClick={() => alert(`Testing id ${id}`)}>
+        <Button
+          className={styles.button}
+          variant="outlined"
+          onClick={() => alert(`Testing id ${id}`)}
+        >
           Test
         </Button>
       </>
@@ -98,6 +105,13 @@ function Tests() {
           rowsPerPageOptions={[5]}
         />
       </div>
+      <Button
+        variant="contained"
+        startIcon={<Upload />}
+        onClick={() => alert(`Upload`)}
+      >
+        Upload
+      </Button>
     </section>
   );
 }
