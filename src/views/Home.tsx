@@ -4,7 +4,7 @@ import classNames from "classnames";
 import styles from "./Home.module.scss";
 import { Results, Tests } from "components/index";
 
-function Home() {
+const Home = () => {
   const containerClass = classNames({
     [styles.container]: true,
   });
