@@ -4,9 +4,10 @@ import classNames from "classnames";
 import styles from "./Home.module.scss";
 import { Results, Tests } from "components/index";
 import { useEffect, useState } from "react";
-import { currentlyRunningTests, initMqttClient,killMqttClient,requestMqttTest,currentWorkstation } from "bff/mqtt";
+import { initMqttClient,killMqttClient,requestMqttTest,currentWorkstation } from "bff/mqtt";
 import { initDB,getTests, storeTest,deleteTest, getTest } from "bff/localstorage";
 import { fileUploadHandler } from "bff/files";
+import { Alert, Snackbar } from "@mui/material";
 const Home = () => {
   const containerClass = classNames({
     [styles.container]: true,
@@ -27,6 +28,7 @@ const Home = () => {
 
   const [availableTests, setAvailableTests] = useState<any[]>([]);
   const [runningTests, setRunningTests] = useState<any[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
     initMqttClient(setRunningTests);
@@ -45,11 +47,12 @@ const Home = () => {
 
 
   const runTest = (id:string) => {
-    const selectedTest = getTest(id)[0]
+    const selectedTest = getTest(id)
     console.log(selectedTest,currentWorkstation);
     if (currentWorkstation && currentWorkstation.AppId ){
       const testID = id+Date.now();
       requestMqttTest(testID,selectedTest,currentWorkstation.AppId);
+      setOpen(true);
     }
   }
 
@@ -74,6 +77,11 @@ const Home = () => {
   }
   return (
     <div className={containerClass}>
+      <Snackbar open={open} autoHideDuration={4000} onClose={() => setOpen(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right'}}>
+  <Alert  severity="success" sx={{ width: '100%' }}>
+    This is a success message!
+  </Alert>
+</Snackbar>
       <header className={headerClass}>
         <Typography margin={2} variant="h3">
           <img src="/peacock.png" alt="Peacock logo" />

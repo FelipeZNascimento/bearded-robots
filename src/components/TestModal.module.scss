@@ -16,3 +16,15 @@
     max-height: 600px;
     padding: 16px;
 }
+
+.screenshotCompare{
+  display:flex;
+  flex-shrink: 1;
+  div {
+    width:50%;
+    margin:16px;
+    img{
+      width:100%;
+    }
+  }
+}

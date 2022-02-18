@@ -12,6 +12,9 @@ import {
 
 import classNames from "classnames";
 import styles from "./Results.module.scss";
+import ResultModal from "./ResultModal";
+import { useState } from "react";
+import { getTest } from "bff/localstorage";
 
 interface ContainerProps {
   rows: any[];
@@ -26,6 +29,14 @@ const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) =>
   const buttonContainerClass = classNames("GFlexCenter", {
     [styles.buttonContainer]: true,
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedResult, setSelectedResult] = useState<any>(null);
+  const handleModalOpening = (id: GridRowId) => {
+    const testObject = rows.find((row) => row.id === id);
+    testObject.test = getTest(id as string);
+    setSelectedResult(testObject);
+    setIsModalOpen(true);
+  };
 
   const renderCell = (id: GridRowId) => {
     const testObject = rows.find((row) => row.id === id);
@@ -56,8 +67,8 @@ const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) =>
       }
 
       return (
-        <div className={styles.testResult}>
-          <p className={styles.testName} key={testObject.status}>{testObject.status}</p>
+        <div className={styles.testResult} onClick={() => handleModalOpening(id)}>
+          <p className={styles.testName} >{testObject.status}</p>
           <p className={styles.testStatus}>{icon()}</p>
         </div>
       );
@@ -106,6 +117,7 @@ const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) =>
           Export
         </Button>
       </div>
+      <ResultModal resultInstance={selectedResult} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };

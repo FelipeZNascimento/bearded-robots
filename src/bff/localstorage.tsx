@@ -22,7 +22,7 @@ export const storeTest = (testData:any) => {
 export const getTest = (id:string) => {
     return lib.queryAll(TABLE_TESTS, {
         query: {id}
-    });
+    })[0];
 }
 
 export const getTests = () => {
