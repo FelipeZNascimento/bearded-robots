@@ -5,7 +5,7 @@ const lib = new localStorageDB("testmanager", localStorage);
 
 export const initDB = () =>  {
     if(lib.isNew()){
-        lib.createTable(TABLE_TESTS, ["id", "Device", "Steps"]);
+        lib.createTable(TABLE_TESTS, ["id", "Device", "Steps","name"]);
         lib.commit();
     }
 }

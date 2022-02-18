@@ -3,38 +3,43 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import { Upload } from "@mui/icons-material";
-import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 import { TestModal } from "components/index";
 
 import classNames from "classnames";
 import styles from "./Tests.module.scss";
-const testJson = require("test.json");
+import { Test } from "bff/types";
 
 const Input = styled("input")({
   display: "none",
 });
 interface ContainerProps {
-  rows: any[];
+  rows: Test[];
   runTest : (id:string) => void
   attemptDeleteTest : (id:any) => void
   handleUpload : (e:any) => void
+  canRunTests: boolean;
 }
 
-function Tests({rows, runTest,attemptDeleteTest,handleUpload }: ContainerProps) {
+
+function Tests({rows, runTest,attemptDeleteTest,handleUpload, canRunTests }: ContainerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTestId, setModalTestId] = useState<null | GridRowId>(null);
+  const [selectedTest, setSelectedTest] = useState<Test>();
 
   const containerClass = classNames("GFlexCenter", {
     [styles.container]: true,
   });
 
-  const handleModalOpening = (id: GridRowId) => {
-    setModalTestId(id);
-    setIsModalOpen(true);
+  const handleModalOpening = (id: string) => {
+    const testObject = rows.find((row: Test) => row.id === id);
+    if (testObject) {
+      setSelectedTest(testObject);
+      setIsModalOpen(true);
+    }
   };
 
-  const renderButtons = (id: GridRowId) => {
+  const renderButtons = (id: string) => {
     return (
       <>
         <Button
@@ -58,7 +63,8 @@ function Tests({rows, runTest,attemptDeleteTest,handleUpload }: ContainerProps) 
         <Button
           className={styles.button}
           variant="outlined"
-          onClick={() => runTest(id as string)}
+          onClick={() => runTest(id)}
+          disabled={!canRunTests}
         >
           Test
         </Button>
@@ -78,7 +84,7 @@ function Tests({rows, runTest,attemptDeleteTest,handleUpload }: ContainerProps) 
     {
       cellClassName: styles.rows,
       disableColumnMenu: true,
-      field: "id",
+      field: "name",
       flex: 2,
       headerClassName: styles.header,
       headerName: "Test",
@@ -94,7 +100,7 @@ function Tests({rows, runTest,attemptDeleteTest,handleUpload }: ContainerProps) 
       headerClassName: styles.header,
       headerName: "Actions",
       sortable: false,
-      renderCell: (params) => renderButtons(params.id),
+      renderCell: (params) => renderButtons(params.id as string),
     },
   ];
   return (
@@ -119,7 +125,7 @@ function Tests({rows, runTest,attemptDeleteTest,handleUpload }: ContainerProps) 
           Upload Tests
         </Button>
       </label>
-      <TestModal testDescription={JSON.stringify(testJson)} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <TestModal selectedTest={selectedTest} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 };

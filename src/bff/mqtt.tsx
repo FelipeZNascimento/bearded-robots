@@ -2,14 +2,15 @@ import {
     Client,
     Message
 } from 'paho-mqtt';
+import { TestRun,TestResult } from './types';
 const BROKER_URL = 'broker.hivemq.com'
 const BROKER_PORT = 8000;
 const BROKER_PATH = "/mqtt"
 export const CLIENT_ID = "batatas"
 const client = new Client(BROKER_URL, BROKER_PORT, BROKER_PATH, CLIENT_ID);
-let currentlyRunningTests: any[] = []
-let testsCallback: (tests:any[]) => void
+let setRunningTests: ((testuns: TestRun[]) => void);
 let currentWorkstationCallback: (workstation:any) => void
+let currentTestRuns: TestRun[] = [];
 const TOPICS = {
     SUBSCRIBE_STATIONS: `bearded-robots/automation/${CLIENT_ID}/discoverresponse1`,
     SUBSCRIBE_TESTRESULTS: `bearded-robots/automation/${CLIENT_ID}/starttestresponse`,
@@ -17,44 +18,42 @@ const TOPICS = {
     PUBLISH_STARTTEST: (appID: string) => `bearded-robots/automation/${appID}/starttest`
 }
 
-function handleConnectionLost(responseObject: any) {
+const handleConnectionLost = (responseObject: any) =>{
     if (responseObject.errorCode !== 0) {
         console.log("onConnectionLost:", responseObject.errorMessage);
     }
 }
-
-interface TestResults {
-    StartTime: string;
-    EndTime: string;
-    Screenshots: {ActualScreenshot: string, Similarity: string}[];
-    TestId: string;
-    
+export const updateTestRuns = (runs: TestRun[]) =>{
+    currentTestRuns = runs;
 }
-
-function handleMessageArrived(message: Message) {
+const handleMessageArrived = (message: Message) => {
     switch (message.destinationName) {
         case TOPICS.SUBSCRIBE_STATIONS:
             const data = JSON.parse(message.payloadString);
             currentWorkstationCallback(data);
             break;
         case TOPICS.SUBSCRIBE_TESTRESULTS:
-            const testResults = JSON.parse(message.payloadString) as TestResults;
-            const currentTest = currentlyRunningTests.find((item) => {console.log(item); return item.TestId === testResults.TestId});
-            currentTest.status = "done";
-            currentTest.results = testResults;
-            testsCallback([...currentlyRunningTests]);
+            const testResults = JSON.parse(message.payloadString) as TestResult;
+            const currentTest = currentTestRuns.find((item: TestRun) => {console.log(item); return item.TestId === testResults.TestId});
+            if(currentTest){
+                currentTest.status = "done";
+                currentTest.results = testResults;
+                setRunningTests([...currentTestRuns]);
+            }
+          
             break;
         default:
             console.log("UNKNOWN TOPIC:", message.destinationName)
     }
 }
 
-function onConnect() {
+const onConnect = () => {
     client.subscribe(TOPICS.SUBSCRIBE_STATIONS, {
         onSuccess: (e) => {
             client.send(TOPICS.PUBLISH_DISCOVER, JSON.stringify({
                 "ClientAppId": CLIENT_ID
             }));
+            
         },
         onFailure: (e) => {
             console.log("sub dead", e)
@@ -63,11 +62,11 @@ function onConnect() {
 }
 
 
-export const initMqttClient = (overrideTestsCallback: ((tests:any[]) => void )| null = null, overrideCurrentWorkstationCallback:((tests:any[]) => void )| null = null) => {
+export const initMqttClient = (overrideSetRunningTests : ((testuns: TestRun[]) => void) | null, overrideCurrentWorkstationCallback:((tests:any[]) => void )| null = null) => {
     client.onConnectionLost = handleConnectionLost;
     client.onMessageArrived = handleMessageArrived;
-    if (overrideTestsCallback){
-        testsCallback = overrideTestsCallback;
+    if (overrideSetRunningTests){
+        setRunningTests = overrideSetRunningTests;
     }
     if (overrideCurrentWorkstationCallback){
         currentWorkstationCallback = overrideCurrentWorkstationCallback;
@@ -81,20 +80,16 @@ export const initMqttClient = (overrideTestsCallback: ((tests:any[]) => void )| 
     return client;
 }
 
-export const requestMqttTest = (testID: string, testContent: any, appID: string) => {
-    testID = "qwer";
-    const testRun = {
-        id: testContent.id, status: "loading", testName: testContent.id,    TestId: testID,
-      }
-      currentlyRunningTests.push(testRun);
+export const requestMqttTest = (testRun: TestRun, appID: string) => {
     client.subscribe(TOPICS.SUBSCRIBE_TESTRESULTS, {
         onSuccess: (e) => {
-            testsCallback([...currentlyRunningTests]);
             client.send(TOPICS.PUBLISH_STARTTEST(appID), JSON.stringify({
                 ClientAppId: CLIENT_ID,
-                TestId: testID,
-                ...testContent
+                ...testRun
             }));
+            currentTestRuns = [...currentTestRuns,testRun];
+            setRunningTests(currentTestRuns);
+
         },
         onFailure: (e) => {
             console.log("test did not start", e)

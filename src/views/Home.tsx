@@ -4,10 +4,11 @@ import classNames from "classnames";
 import styles from "./Home.module.scss";
 import { Results, Tests } from "components/index";
 import { useEffect, useState } from "react";
-import { initMqttClient,killMqttClient,requestMqttTest } from "bff/mqtt";
+import { initMqttClient,killMqttClient,requestMqttTest, updateTestRuns } from "bff/mqtt";
 import { initDB,getTests, storeTest,deleteTest, getTest } from "bff/localstorage";
 import { fileUploadHandler } from "bff/files";
 import { CircularProgress } from "@mui/material";
+import {  TestRun } from "bff/types";
 const Home = () => {
   const containerClass = classNames({
     [styles.container]: true,
@@ -26,53 +27,61 @@ const Home = () => {
   });
 
 
-  const [availableTests, setAvailableTests] = useState<any[]>([]);
-  const [currentWorkstation, setCurrentWorkstation] = useState<any>(null);
-  const [runningTests, setRunningTests] = useState<any[]>([]);
+  const [availableTests, setAvailableTests] = useState <any[]>([]);
+  const [currentWorkstation, setCurrentWorkstation] = useState <any>(null);
+  const [runningTests, setRunningTests] = useState<TestRun[]>([]);
 
   useEffect(() => {
-    initMqttClient(setRunningTests,setCurrentWorkstation);
+    initMqttClient(setRunningTests, setCurrentWorkstation);
     initDB();
-  setAvailableTests(getTests());
-  return () => {
-    killMqttClient()
-  }
-  },[])
-  const handleUpload = (e:any) => {
+    setAvailableTests(getTests());
+    return () => {
+      killMqttClient()
+    }
+  }, [])
+  const handleUpload = (e: any) => {
     fileUploadHandler(e, (result) => {
-      storeTest({Device: result.Device, Steps: result.Steps})
+      storeTest({
+        Device: result.Device,
+        Steps: result.Steps,
+        name: result.name
+      })
       setAvailableTests(getTests());
     })
   }
 
 
-  const runTest = (id:string) => {
+  const runTest = (id: string) => {
     const selectedTest = getTest(id)
-    if (currentWorkstation && currentWorkstation.AppId ){
-      const testID = id+Date.now();
-      requestMqttTest(testID,selectedTest,currentWorkstation.AppId);
+    if (currentWorkstation && currentWorkstation.AppId) {
+      const TestId = id + Date.now();
+      const newTest: TestRun = {TestId,test:selectedTest, status:"loading"};
+      requestMqttTest(newTest, currentWorkstation.AppId);
     }
   }
 
-  const attemptDeleteTest = (id: any) => {
+  const attemptDeleteTest = (id: string) => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm(`Deleting id ${id}`)) {
-      deleteTest(id as string)
+      deleteTest(id)
       setAvailableTests(getTests());
     }
   }
 
   const clearRunningTests = () => {
-      // eslint-disable-next-line no-restricted-globals
+    console.log("zxcvzxcvzxcv")
+    // eslint-disable-next-line no-restricted-globals
     if (confirm(`Are you sure? Test results will be lost`)) {
       setRunningTests([])
+      updateTestRuns([])
+      
     }
   }
 
   const exportRunningTests = () => {
     navigator.clipboard.writeText(JSON.stringify(runningTests));
-
   }
+  
   return (
     <div className={containerClass}>
       <header className={headerClass}>
@@ -83,7 +92,7 @@ const Home = () => {
         </Typography>
       </header>
       <main className={mainClass}>
-          <Tests rows={availableTests} runTest={runTest} attemptDeleteTest={attemptDeleteTest} handleUpload={handleUpload} />
+          <Tests rows={availableTests} runTest={runTest} attemptDeleteTest={attemptDeleteTest} handleUpload={handleUpload} canRunTests={currentWorkstation !== null} />
           <Results rows={runningTests} clearRunningTests={clearRunningTests} exportRunningTests={exportRunningTests} setRunningTests={setRunningTests} />
       </main>
       <footer className={footerClass}>

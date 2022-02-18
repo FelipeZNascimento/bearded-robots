@@ -13,40 +13,39 @@ import Paper from "@mui/material/Paper";
 
 import styles from "./TestModal.module.scss";
 import { Alert, Button, ButtonGroup } from "@mui/material";
-
+import { KeyValue, ScreenshotComparison, TestRun, TStep } from "bff/types";
 interface ITestModal {
   isOpen: boolean;
-  resultInstance: any;
+  resultInstance: TestRun;
   onClose: () => void;
   updateResultStatus: (id:string,status:string) => void;
 }
 
-type TStep = {
-  Command: string;
-  Value: string;
-};
 
 const ResultModal = ({ isOpen, resultInstance, onClose,updateResultStatus }: ITestModal) => {
   let screenshotCount = 0;
-  let screenshots: any = [];
-  let keys: any = [];
+  let screenshots: ScreenshotComparison[] = [];
+  let keys: KeyValue[] = [];
   if(resultInstance &&  resultInstance.results && resultInstance.test){
     keys = [
-      {key: "Status", value:resultInstance.status},
-      {key: "Device", value:resultInstance.test.Device},
-      {key: "Steps", value:resultInstance.test.Steps.length},
-      {key: "Start Time", value:resultInstance.results.StartTime},
-      {key: "End Time", value:resultInstance.results.EndTime},
+      {key: "Status", value: resultInstance.status},
+      {key: "Device", value: resultInstance.test.Device},
+      {key: "Steps", value: resultInstance.test.Steps.length.toString()},
+      {key: "Start Time", value: resultInstance.results.StartTime},
+      {key: "End Time", value: resultInstance.results.EndTime},
     ]
   resultInstance.test.Steps.forEach((step: TStep) => {
-    if (step.Command === "SCREENSHOT") {
-      const newComparison = {
-        expected : step.Value,
-        result : resultInstance.results.Screenshots[screenshotCount].ActualScreenshot,
-        similarity: resultInstance.results.Screenshots[screenshotCount].Similarity
+    if (step.Command === "SCREENSHOT" ) {
+      const checkScreenshotResultExists = resultInstance?.results?.Screenshots[screenshotCount];
+      if (checkScreenshotResultExists){
+        const newComparison = {
+          expected : step.Value,
+          result : checkScreenshotResultExists.ActualScreenshot,
+          similarity: checkScreenshotResultExists.Similarity
+        }
+        screenshots.push(newComparison);
+        screenshotCount++;
       }
-      screenshots.push(newComparison);
-      screenshotCount++;
     }
   });
 }
@@ -65,18 +64,15 @@ if(!resultInstance?.results){
           </Typography>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-              {resultInstance?.status === "done" && (
                               <TableHead>
                               <TableRow>
                                 <TableCell align="center">Validate Test</TableCell>
                                 <TableCell align="center">     <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                <Button onClick={() => {updateResultStatus(resultInstance.id, "pass")}}>PASS</Button>
-                <Button onClick={() => {updateResultStatus(resultInstance.id, "fail")}}>FAIL</Button>
+                <Button color="success" onClick={() => {updateResultStatus(resultInstance.TestId, "pass")}}>PASS</Button>
+                <Button color="error" onClick={() => {updateResultStatus(resultInstance.TestId, "fail")}}>FAIL</Button>
               </ButtonGroup></TableCell>
                               </TableRow>
                 </TableHead>
-           
-              )}
               <TableBody>
                 {keys &&
                 keys.map((key: any) => (

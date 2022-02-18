@@ -15,14 +15,14 @@ import {
 import classNames from "classnames";
 import styles from "./Results.module.scss";
 import { useState } from "react";
-import { getTest } from "bff/localstorage";
 import { ResultModal } from "components/index";
+import { TestRun } from "bff/types";
 
 interface ContainerProps {
   rows: any[];
   exportRunningTests: () => void;
   clearRunningTests: () => void;
-  setRunningTests: (tests:any[]) => void;
+  setRunningTests: (tests:TestRun[]) => void;
 }
 const Results = ({rows,exportRunningTests,clearRunningTests,setRunningTests}: ContainerProps) => {
   const containerClass = classNames("GFlexCenter", {
@@ -35,20 +35,19 @@ const Results = ({rows,exportRunningTests,clearRunningTests,setRunningTests}: Co
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedResult, setSelectedResult] = useState<any>(null);
   const handleModalOpening = (id: GridRowId) => {
-    const testObject = rows.find((row) => row.id === id);
-    testObject.test = getTest(id as string);
+    const testObject = rows.find((row) => row.TestId === id);
     setSelectedResult(testObject);
     setIsModalOpen(true);
   };
 
-  const updateResultStatus = (id: string, status:string) => {
-    const testObject = rows.find((row) => row.id === id);
+  const updateResultStatus = (TestId: string, status:string) => {
+    const testObject = rows.find((row) => row.TestId === TestId);
     testObject.status = status;
     setRunningTests([...rows])
   } 
 
-  const renderCell = (id: GridRowId) => {
-    const testObject = rows.find((row) => row.id === id);
+  const renderCell = (TestId: string) => {
+    const testObject = rows.find((row: TestRun) => row.TestId === TestId);
     let icon = () => <HelpOutline color="warning" />;
     if (testObject) {
       switch (testObject.status) {
@@ -90,8 +89,8 @@ const Results = ({rows,exportRunningTests,clearRunningTests,setRunningTests}: Co
       }
 
       return (
-        <div className={styles.testResult} onClick={() => handleModalOpening(id)}>
-          <p className={styles.testName} >{testObject.status}</p>
+        <div className={styles.testResult} onClick={() => handleModalOpening(TestId)}>
+          <p className={styles.testName} >{testObject?.test?.name.substr(0,30)}</p>
           <p className={styles.testStatus}>{icon()}</p>
         </div>
       );
@@ -109,7 +108,7 @@ const Results = ({rows,exportRunningTests,clearRunningTests,setRunningTests}: Co
       headerClassName: styles.header,
       headerName: "Results",
       sortable: false,
-      renderCell: (params) => renderCell(params.id),
+      renderCell: (params) => renderCell(params.id as string),
     },
   ];
 
@@ -122,6 +121,7 @@ const Results = ({rows,exportRunningTests,clearRunningTests,setRunningTests}: Co
           columns={columns}
           autoPageSize
           rowsPerPageOptions={[5]}
+          getRowId={row => row.TestId}
         />
       </div>
       <div className={buttonContainerClass}>

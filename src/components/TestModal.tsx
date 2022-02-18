@@ -12,32 +12,22 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import styles from "./TestModal.module.scss";
+import { Test, TKey,TStep } from "bff/types";
 
 interface ITestModal {
   isOpen: boolean;
-  testDescription: string;
+  selectedTest?: Test;
   onClose: () => void;
 }
 
-type TStep = {
-  Command: string;
-  Value: string;
-};
-
-type TKey = {
-  command: string;
-  value: string;
-};
-
-const TestModal = ({ isOpen, testDescription, onClose }: ITestModal) => {
-  const testJson = JSON.parse(testDescription);
-  const device: string = testJson.Device;
-  const steps: TStep[] = testJson.Steps;
+const TestModal = ({ isOpen, selectedTest, onClose }: ITestModal) => {
+  const device = selectedTest?.Device;
+  const steps = selectedTest?.Steps;
 
   const keys: TKey[] = [];
   let screenshot: string = "";
 
-  steps.forEach((step: TStep) => {
+  steps?.forEach((step: TStep) => {
     if (step.Command === "KEY") {
       keys.push({ command: step.Command, value: step.Value });
     } else if (step.Command === "SCREENSHOT") {
