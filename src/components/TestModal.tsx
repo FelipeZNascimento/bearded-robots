@@ -26,12 +26,18 @@ const TestModal = ({ isOpen, selectedTest, onClose }: ITestModal) => {
 
     const keys: TKey[] = [];
     let screenshot: string = "";
+    let croppedScreenshots: string[] = [];
 
     steps?.forEach((step: TStep) => {
         if (step.Command === "KEY") {
             keys.push({ command: step.Command, value: step.Value });
         } else if (step.Command === "SCREENSHOT") {
             screenshot = step.Value;
+            croppedScreenshots = step.ScreenshotCropAreas
+                ? step.ScreenshotCropAreas.map(
+                      (crop) => crop.OriginalCroppedScreenshot || ""
+                  )
+                : [];
         }
     });
 
@@ -82,13 +88,24 @@ const TestModal = ({ isOpen, selectedTest, onClose }: ITestModal) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    {screenshot && (
-                        <img
-                            className={styles.image}
-                            src={`data:image/jpeg;base64,${screenshot}`}
-                            alt="Test screenshot"
-                        />
-                    )}
+                    <div className={styles.imagesContainer}>
+                        {screenshot && (
+                            <img
+                                className={styles.image}
+                                src={`data:image/jpeg;base64,${screenshot}`}
+                                alt="Test screenshot"
+                            />
+                        )}
+                        {croppedScreenshots &&
+                            croppedScreenshots.length > 0 &&
+                            croppedScreenshots.map((crop) => (
+                                <img
+                                    className={styles.image}
+                                    src={`data:image/jpeg;base64,${crop}`}
+                                    alt="Test screenshot"
+                                />
+                            ))}
+                    </div>
                 </Box>
             </Fade>
         </Modal>
