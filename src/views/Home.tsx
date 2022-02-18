@@ -98,6 +98,11 @@ const Home = () => {
     return (
         <div className={containerClass}>
             <header className={headerClass}>
+                <div className={styles.bender}>
+                    <img src="/bender.png" alt="Bender robot with a beard" />
+                    <img src="/bender.png" alt="Bender robot with a beard" />
+                    <img src="/bender.png" alt="Bender robot with a beard" />
+                </div>
                 <Typography margin={2} variant="h3">
                     <img src="/sky.png" alt="Sky logo" />
                     Bearded Robots
