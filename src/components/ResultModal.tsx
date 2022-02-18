@@ -13,7 +13,7 @@ import Paper from "@mui/material/Paper";
 
 import styles from "./TestModal.module.scss";
 import { Alert, Button, ButtonGroup } from "@mui/material";
-import { KeyValue, ScreenshotComparison, TestRun, TStep } from "bff/types";
+import { KeyValue, ScreenshotComparison, ScreenshotCropArea, TestRun, TStep } from "bff/types";
 interface ITestModal {
   isOpen: boolean;
   resultInstance: TestRun;
@@ -35,16 +35,33 @@ const ResultModal = ({ isOpen, resultInstance, onClose,updateResultStatus }: ITe
       {key: "End Time", value: resultInstance.results.EndTime},
     ]
   resultInstance.test.Steps.forEach((step: TStep) => {
-    if (step.Command === "SCREENSHOT" ) {
+    if (step.Command === "SCREENSHOT" && resultInstance?.results?.Screenshots) {
       const checkScreenshotResultExists = resultInstance?.results?.Screenshots[screenshotCount];
       if (checkScreenshotResultExists){
-        const newComparison = {
-          expected : step.Value,
-          result : checkScreenshotResultExists.ActualScreenshot,
-          similarity: checkScreenshotResultExists.Similarity
+        const checkCroppedScreenshots = checkScreenshotResultExists.ScreenshotCropAreas
+        if(checkCroppedScreenshots?.length){
+          checkCroppedScreenshots.forEach((cropshot: ScreenshotCropArea, index:number) => {
+            if (step?.ScreenshotCropAreas?.[index]?.OriginalCroppedScreenshot){
+              const newComparison = {
+                expected : step.ScreenshotCropAreas[index].OriginalCroppedScreenshot,
+                result : cropshot.ActualCroppedScreenshot,
+                similarity: cropshot.Similarity
+              }
+              screenshots.push(newComparison);
+              screenshotCount++;
+            }
+          });
         }
-        screenshots.push(newComparison);
-        screenshotCount++;
+        else{
+          const newComparison = {
+            expected : step.Value,
+            result : checkScreenshotResultExists.ActualScreenshot,
+            similarity: checkScreenshotResultExists.Similarity
+          }
+          screenshots.push(newComparison);
+          screenshotCount++;
+        }
+
       }
     }
   });

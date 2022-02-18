@@ -6,7 +6,7 @@ import { TestRun,TestResult } from './types';
 const BROKER_URL = 'broker.hivemq.com'
 const BROKER_PORT = 8000;
 const BROKER_PATH = "/mqtt"
-export const CLIENT_ID = "batatas"
+export const CLIENT_ID = "cebolas"
 const client = new Client(BROKER_URL, BROKER_PORT, BROKER_PATH, CLIENT_ID);
 let setRunningTests: ((testuns: TestRun[]) => void);
 let currentWorkstationCallback: (workstation:any) => void
@@ -34,13 +34,12 @@ const handleMessageArrived = (message: Message) => {
             break;
         case TOPICS.SUBSCRIBE_TESTRESULTS:
             const testResults = JSON.parse(message.payloadString) as TestResult;
-            const currentTest = currentTestRuns.find((item: TestRun) => {console.log(item); return item.TestId === testResults.TestId});
+            const currentTest = currentTestRuns.find((item: TestRun) =>  item.TestId === testResults.TestId);
             if(currentTest){
                 currentTest.status = "done";
                 currentTest.results = testResults;
                 setRunningTests([...currentTestRuns]);
             }
-          
             break;
         default:
             console.log("UNKNOWN TOPIC:", message.destinationName)
