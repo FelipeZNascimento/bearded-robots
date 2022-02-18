@@ -1,8 +1,8 @@
 export type TStep = {
     Command: string;
     Value: string;
-    ScreenshotCropAreas? :ScreenshotCropArea[];
-}
+    ScreenshotCropAreas: ScreenshotCropArea[];
+};
 export type Test = {
     name: string;
     ID?: string; //auto generated
@@ -17,23 +17,23 @@ export type TKey = {
 };
 
 export type KeyValue = {
-    key:string;
-    value:string;
-}
+    key: string;
+    value: string;
+};
 export type ScreenshotCropArea = {
-    ActualCroppedScreenshot: string; 
-    OriginalCroppedScreenshot?: string; 
-    Height:string; 
-    Similarity:string; 
-    Width:string;
-    X:string;
-    Y:string;
-}
+    ActualCroppedScreenshot: string;
+    OriginalCroppedScreenshot?: string;
+    Height: string;
+    Similarity: string;
+    Width: string;
+    X: string;
+    Y: string;
+};
 type ScreenshotResults = {
     ActualScreenshot: string;
     Similarity: string;
     ScreenshotCropAreas?: ScreenshotCropArea[];
-}
+};
 export type TestResult = {
     StartTime: string;
     EndTime: string;
@@ -49,7 +49,7 @@ export type TestRun = {
 };
 
 export type ScreenshotComparison = {
-    expected?:string;
-    result?:string;
-    similarity?:string;
-}
+    expected?: string;
+    result?: string;
+    similarity?: string;
+};
