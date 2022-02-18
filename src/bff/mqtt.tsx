@@ -7,9 +7,9 @@ const BROKER_PORT = 8000;
 const BROKER_PATH = "/mqtt"
 export const CLIENT_ID = "batatas"
 const client = new Client(BROKER_URL, BROKER_PORT, BROKER_PATH, CLIENT_ID);
-export let currentWorkstation: any = null;
-export let currentlyRunningTests: any[] = []
+let currentlyRunningTests: any[] = []
 let testsCallback: (tests:any[]) => void
+let currentWorkstationCallback: (workstation:any) => void
 const TOPICS = {
     SUBSCRIBE_STATIONS: `bearded-robots/automation/${CLIENT_ID}/discoverresponse1`,
     SUBSCRIBE_TESTRESULTS: `bearded-robots/automation/${CLIENT_ID}/starttestresponse`,
@@ -35,7 +35,7 @@ function handleMessageArrived(message: Message) {
     switch (message.destinationName) {
         case TOPICS.SUBSCRIBE_STATIONS:
             const data = JSON.parse(message.payloadString);
-            currentWorkstation = data;
+            currentWorkstationCallback(data);
             break;
         case TOPICS.SUBSCRIBE_TESTRESULTS:
             const testResults = JSON.parse(message.payloadString) as TestResults;
@@ -63,11 +63,14 @@ function onConnect() {
 }
 
 
-export const initMqttClient = (overrideTestsCallback: ((tests:any[]) => void )| null = null) => {
+export const initMqttClient = (overrideTestsCallback: ((tests:any[]) => void )| null = null, overrideCurrentWorkstationCallback:((tests:any[]) => void )| null = null) => {
     client.onConnectionLost = handleConnectionLost;
     client.onMessageArrived = handleMessageArrived;
     if (overrideTestsCallback){
-        testsCallback = (tests:any[]) => overrideTestsCallback(tests);
+        testsCallback = overrideTestsCallback;
+    }
+    if (overrideCurrentWorkstationCallback){
+        currentWorkstationCallback = overrideCurrentWorkstationCallback;
     }
     client.connect({
         onSuccess: onConnect,
@@ -80,18 +83,12 @@ export const initMqttClient = (overrideTestsCallback: ((tests:any[]) => void )| 
 
 export const requestMqttTest = (testID: string, testContent: any, appID: string) => {
     testID = "qwer";
-    console.log("GOING TO TEST", {
-        ClientAppId: CLIENT_ID,
-        TestId: testID,
-        ...testContent
-    })
     const testRun = {
         id: testContent.id, status: "loading", testName: testContent.id,    TestId: testID,
       }
       currentlyRunningTests.push(testRun);
     client.subscribe(TOPICS.SUBSCRIBE_TESTRESULTS, {
         onSuccess: (e) => {
-            console.log("SUBSCRIBED TO TEST");
             testsCallback([...currentlyRunningTests]);
             client.send(TOPICS.PUBLISH_STARTTEST(appID), JSON.stringify({
                 ClientAppId: CLIENT_ID,

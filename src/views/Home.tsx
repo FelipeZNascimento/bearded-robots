@@ -4,10 +4,10 @@ import classNames from "classnames";
 import styles from "./Home.module.scss";
 import { Results, Tests } from "components/index";
 import { useEffect, useState } from "react";
-import { initMqttClient,killMqttClient,requestMqttTest,currentWorkstation } from "bff/mqtt";
+import { initMqttClient,killMqttClient,requestMqttTest } from "bff/mqtt";
 import { initDB,getTests, storeTest,deleteTest, getTest } from "bff/localstorage";
 import { fileUploadHandler } from "bff/files";
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
 const Home = () => {
   const containerClass = classNames({
     [styles.container]: true,
@@ -27,11 +27,12 @@ const Home = () => {
 
 
   const [availableTests, setAvailableTests] = useState<any[]>([]);
+  const [currentWorkstation, setCurrentWorkstation] = useState<any>(null);
   const [runningTests, setRunningTests] = useState<any[]>([]);
   const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    initMqttClient(setRunningTests);
+    initMqttClient(setRunningTests,setCurrentWorkstation);
     initDB();
   setAvailableTests(getTests());
   return () => {
@@ -84,7 +85,7 @@ const Home = () => {
 </Snackbar>
       <header className={headerClass}>
         <Typography margin={2} variant="h3">
-          <img src="/peacock.png" alt="Peacock logo" />
+        <img src="/sky.png" alt="Sky logo" />
           Bearded Robots
           <img src="/peacock.png" alt="Peacock logo" />
         </Typography>
@@ -94,11 +95,9 @@ const Home = () => {
           <Results rows={runningTests} clearRunningTests={clearRunningTests} exportRunningTests={exportRunningTests} />
       </main>
       <footer className={footerClass}>
-        <img src="/sky.png" alt="Sky logo" />
-        <Typography margin={1} variant="h6">
-          Developed for Sky by Hugo Dias, André Gomes and Felipe Nascimento
+        <Typography margin={1} variant="h6" >
+          {currentWorkstation ? <>Connected to workstation. Ready to test</>: <>Searching for workstation <CircularProgress /></>}
         </Typography>
-        <img src="/sky.png" alt="Sky logo" />
       </footer>
     </div>
   );
