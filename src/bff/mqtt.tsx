@@ -88,7 +88,8 @@ export const requestMqttTest = (testRun: TestRun, appID: string) => {
                 TOPICS.PUBLISH_STARTTEST(appID),
                 JSON.stringify({
                     ClientAppId: CLIENT_ID,
-                    ...testRun,
+                    ...testRun.test,
+                    TestId: testRun.TestId
                 })
             );
             currentTestRuns = [...currentTestRuns, testRun];

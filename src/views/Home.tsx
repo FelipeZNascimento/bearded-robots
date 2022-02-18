@@ -64,7 +64,6 @@ const Home = () => {
         const selectedTest = getTest(id);
         if (currentWorkstation && currentWorkstation.AppId) {
             const TestId = id + Date.now();
-            console.log(TestId);
             const newTest: TestRun = {
                 TestId,
                 test: selectedTest,
