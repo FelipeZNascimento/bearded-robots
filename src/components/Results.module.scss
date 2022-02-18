@@ -1,56 +1,64 @@
 .container {
-  background-color: #2e3747;
-  flex: 1;
-  flex-direction: column;
-  height: 100%;
+    background-color: #2e3747;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
 }
 
 .table {
-  height: 80%;
-  width: 90%;
-  margin: 10px;
+    height: 80%;
+    width: 90%;
+    margin: 10px;
 }
 
 .header {
-  font-size: 20px;
-  color: white;
+    font-size: 20px;
+    color: white;
 }
 
 .rows {
-  font-size: 16px;
-  color: white;
+    font-size: 16px;
+    color: white;
 }
 
 .testResult {
-  display: flex;
-  flex: 1;
+    display: flex;
+    flex: 1;
 }
 
 .testName {
-  flex: 2;
-  text-align: left;
+    flex: 2;
+    text-align: left;
 }
 
 .testStatus {
-  flex: 1;
-  text-align: right;
+    flex: 1;
+    text-align: right;
 
-  &Loading {
-    @extend .testStatus;
-    animation: spin 4s infinite linear;
-  }
+    &Loading {
+        @extend .testStatus;
+        animation: spin 4s infinite linear;
+    }
 }
 
 .buttonContainer {
-  gap: 20px;
-  width: 100%;
+    gap: 20px;
+    width: 100%;
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.clickable {
+    cursor: pointer;
+
+    & :hover {
+        color: white;
+    }
 }

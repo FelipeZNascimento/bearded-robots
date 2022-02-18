@@ -1,5 +1,3 @@
-
-
 export type TStep = {
     Command: string;
     Value: string;
@@ -7,17 +5,16 @@ export type TStep = {
 }
 export type Test = {
     name: string;
-    ID ? : string; //auto generated
+    ID?: string; //auto generated
     id: string; //hash for free anti-duplication
     Device: string;
     Steps: TStep[];
-
-}
+};
 
 export type TKey = {
     command: string;
     value: string;
-}
+};
 
 export type KeyValue = {
     key:string;
@@ -42,14 +39,14 @@ export type TestResult = {
     EndTime: string;
     Screenshots?: ScreenshotResults[];
     TestId: string;
-}
+};
 
 export type TestRun = {
     results?: TestResult;
     test: Test;
-    status:string;
+    status: string;
     TestId: string;
-}
+};
 
 export type ScreenshotComparison = {
     expected?:string;
