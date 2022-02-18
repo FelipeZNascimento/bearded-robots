@@ -12,12 +12,13 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
 import styles from "./TestModal.module.scss";
-import { Alert } from "@mui/material";
+import { Alert, Button, ButtonGroup } from "@mui/material";
 
 interface ITestModal {
   isOpen: boolean;
   resultInstance: any;
   onClose: () => void;
+  updateResultStatus: (id:string,status:string) => void;
 }
 
 type TStep = {
@@ -25,16 +26,7 @@ type TStep = {
   Value: string;
 };
 
-type TKey = {
-  command: string;
-  value: string;
-};
-
-const ResultModal = ({ isOpen, resultInstance, onClose }: ITestModal) => {
-  // const testJson = JSON.parse(testDescription);
-
-  // const keys: TKey[] = [];
-  // let screenshot: string = "";
+const ResultModal = ({ isOpen, resultInstance, onClose,updateResultStatus }: ITestModal) => {
   let screenshotCount = 0;
   let screenshots: any = [];
   let keys: any = [];
@@ -58,6 +50,9 @@ const ResultModal = ({ isOpen, resultInstance, onClose }: ITestModal) => {
     }
   });
 }
+if(!resultInstance?.results){
+  return null;
+}
   return (
     <Modal aria-labelledby="transition-modal-title" aria-describedby="transition-modal-description" open={isOpen}
       onClose={onClose} closeAfterTransition BackdropComponent={Backdrop} BackdropProps={{
@@ -70,12 +65,18 @@ const ResultModal = ({ isOpen, resultInstance, onClose }: ITestModal) => {
           </Typography>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">Key</TableCell>
-                  <TableCell align="center">Value</TableCell>
-                </TableRow>
-              </TableHead>
+              {resultInstance?.status === "done" && (
+                              <TableHead>
+                              <TableRow>
+                                <TableCell align="center">Validate Test</TableCell>
+                                <TableCell align="center">     <ButtonGroup variant="contained" aria-label="outlined primary button group">
+                <Button onClick={() => {updateResultStatus(resultInstance.id, "pass")}}>PASS</Button>
+                <Button onClick={() => {updateResultStatus(resultInstance.id, "fail")}}>FAIL</Button>
+              </ButtonGroup></TableCell>
+                              </TableRow>
+                </TableHead>
+           
+              )}
               <TableBody>
                 {keys &&
                 keys.map((key: any) => (
@@ -113,6 +114,7 @@ const ResultModal = ({ isOpen, resultInstance, onClose }: ITestModal) => {
           </div>
           ))}
           {!screenshots.length && <Typography variant="h6">No screenshots to show</Typography>}
+
         </Box>
       </Fade>
     </Modal>

@@ -112,10 +112,11 @@ function Tests({rows, runTest,attemptDeleteTest,handleUpload }: ContainerProps) 
         <Input
           id="contained-button-file"
           type="file"
+          multiple
           onChange={handleUpload}
         />
         <Button component="span" variant="contained" startIcon={<Upload />}>
-          Upload
+          Upload Tests
         </Button>
       </label>
       <TestModal testDescription={JSON.stringify(testJson)} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

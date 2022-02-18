@@ -8,20 +8,23 @@ import {
   HelpOutline,
   ImportExport,
   Loop,
+  ThumbUpOutlined,
+  ThumbDownOutlined,
 } from "@mui/icons-material";
 
 import classNames from "classnames";
 import styles from "./Results.module.scss";
-import ResultModal from "./ResultModal";
 import { useState } from "react";
 import { getTest } from "bff/localstorage";
+import { ResultModal } from "components/index";
 
 interface ContainerProps {
   rows: any[];
   exportRunningTests: () => void;
   clearRunningTests: () => void;
+  setRunningTests: (tests:any[]) => void;
 }
-const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) => {
+const Results = ({rows,exportRunningTests,clearRunningTests,setRunningTests}: ContainerProps) => {
   const containerClass = classNames("GFlexCenter", {
     [styles.container]: true,
   });
@@ -38,6 +41,12 @@ const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) =>
     setIsModalOpen(true);
   };
 
+  const updateResultStatus = (id: string, status:string) => {
+    const testObject = rows.find((row) => row.id === id);
+    testObject.status = status;
+    setRunningTests([...rows])
+  } 
+
   const renderCell = (id: GridRowId) => {
     const testObject = rows.find((row) => row.id === id);
     let icon = () => <HelpOutline color="warning" />;
@@ -47,6 +56,20 @@ const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) =>
           icon = () => (
             <Tooltip title="Success">
               <CheckCircleOutline color="success" />
+            </Tooltip>
+          );
+          break;
+        case "pass":
+          icon = () => (
+            <Tooltip title="Success">
+              <ThumbUpOutlined color="success" />
+            </Tooltip>
+          );
+          break;
+        case "fail":
+          icon = () => (
+            <Tooltip title="Error">
+              <ThumbDownOutlined color="error" />
             </Tooltip>
           );
           break;
@@ -117,7 +140,7 @@ const Results = ({rows,exportRunningTests,clearRunningTests}: ContainerProps) =>
           Export
         </Button>
       </div>
-      <ResultModal resultInstance={selectedResult} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ResultModal resultInstance={selectedResult} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} updateResultStatus={updateResultStatus} />
     </section>
   );
 };
