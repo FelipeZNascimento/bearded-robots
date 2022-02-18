@@ -39,3 +39,19 @@
         padding-right: 10px;
     }
 }
+
+.bender {
+    left: 0;
+    position: absolute;
+    transform: scaleX(-1);
+
+    & img {
+        max-width: 80px;
+        padding: 0;
+        width: auto;
+    }
+
+    & img:not(:first-child) {
+        margin-left: -40px;
+    }
+}

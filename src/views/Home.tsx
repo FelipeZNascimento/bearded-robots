@@ -1,4 +1,5 @@
 import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
 
 import classNames from "classnames";
 import styles from "./Home.module.scss";
@@ -97,6 +98,26 @@ const Home = () => {
     return (
         <div className={containerClass}>
             <header className={headerClass}>
+                <div className={styles.bender}>
+                    <Tooltip title="Felipe Nascimento">
+                        <img
+                            src="/bender.png"
+                            alt="Bender robot with a beard"
+                        />
+                    </Tooltip>
+                    <Tooltip title="André Gomes">
+                        <img
+                            src="/bender.png"
+                            alt="Bender robot with a beard"
+                        />
+                    </Tooltip>
+                    <Tooltip title="Hugo Dias">
+                        <img
+                            src="/bender.png"
+                            alt="Bender robot with a beard"
+                        />
+                    </Tooltip>
+                </div>
                 <Typography margin={2} variant="h3">
                     <img src="/sky.png" alt="Sky logo" />
                     Bearded Robots
