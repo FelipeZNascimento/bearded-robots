@@ -12,9 +12,9 @@ let setRunningTests: ((testuns: TestRun[]) => void);
 let currentWorkstationCallback: (workstation:any) => void
 let currentTestRuns: TestRun[] = [];
 const TOPICS = {
-    SUBSCRIBE_STATIONS: `bearded-robots/automation/${CLIENT_ID}/discoverresponse1`,
+    SUBSCRIBE_STATIONS: `bearded-robots/automation/${CLIENT_ID}/discoverresponse`,
     SUBSCRIBE_TESTRESULTS: `bearded-robots/automation/${CLIENT_ID}/starttestresponse`,
-    PUBLISH_DISCOVER: 'bearded-robots/automation/discover1',
+    PUBLISH_DISCOVER: 'bearded-robots/automation/discover',
     PUBLISH_STARTTEST: (appID: string) => `bearded-robots/automation/${appID}/starttest`
 }
 
