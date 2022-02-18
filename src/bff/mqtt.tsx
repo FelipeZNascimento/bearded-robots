@@ -3,7 +3,7 @@ import { TestRun, TestResult } from "./types";
 const BROKER_URL = "broker.hivemq.com";
 const BROKER_PORT = 8000;
 const BROKER_PATH = "/mqtt";
-export const CLIENT_ID = "nabos";
+export const CLIENT_ID = "batatas";
 const client = new Client(BROKER_URL, BROKER_PORT, BROKER_PATH, CLIENT_ID);
 let setRunningTests: (testuns: TestRun[]) => void;
 let currentWorkstationCallback: (workstation: any) => void;
